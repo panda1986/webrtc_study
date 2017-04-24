@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分辨率切换</title>
+</head>
+<body>
+    <button id="ld">LD</button>
+    <button id="sd">SD</button>
+    <button id="hd">HD</button>
+    <video autoplay></video>
+
+    <script type="text/javascript" src="../js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var video = document.querySelector('video');
+            navigator.getUserMedia = navigator.getUserMedia ||
+                    navigator.webkitGetUserMedia ||
+                    navigator.mozGetUserMedia ||
+                    navigator.msGetUserMedia;
+            var localMediaStream = null;
+            var ld = document.querySelector('#ld');
+            var sd = document.querySelector('#sd');
+            var hd = document.querySelector('#hd');
+
+            var ldConstraints = {
+                video: {width: {exact: 320}, height: {exact: 240}}
+            };
+
+            var sdConstraints = {
+                video: {width: {exact: 640}, height: {exact: 480}}
+            };
+
+            var hdConstraints = {
+                video: {width: {exact: 1280}, height: {exact: 720}}
+            };
+
+            ld.onclick = function () {
+                getMedia(ldConstraints);
+            };
+
+            sd.onclick = function () {
+                getMedia(sdConstraints);
+            };
+
+            hd.onclick = function () {
+                getMedia(hdConstraints);
+            };
+
+            var gotStream = function (stream) {
+                localMediaStream = stream;
+                video.src = window.URL.createObjectURL(stream);
+                /*video.onloadedmetadata = function(e) {
+                    video.play();
+                };*/
+            };
+
+            var onStreamError = function (err) {
+                console.log("The following error occurred: " + err.name);
+            };
+
+            var getMedia = function (constaints) {
+                if (localMediaStream) {
+                    localMediaStream.getTracks().forEach(function(track) {
+                        track.stop();
+                    });
+                }
+
+                if (navigator.getUserMedia) {
+                    navigator.getUserMedia(constaints, gotStream, onStreamError)
+                }
+            };
+
+        });
+    </script>
+</body>
+</html>

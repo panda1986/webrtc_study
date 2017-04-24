@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>纯音频</title>
+    <style>
+        div#container {
+            display: block;
+            margin: 0 auto 0 auto;
+            max-width: 40em;
+            padding: 1em 1.5em 1.3em 1.5em;
+        }
+        audio {
+            max-width: 100%;
+            width: 300px;
+            height: 32px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <audio controls autoplay></audio>
+    </div>
+    <script type="text/javascript">
+        navigator.getUserMedia = navigator.getUserMedia ||
+                navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia ||
+                navigator.msGetUserMedia;
+        var audio = document.querySelector('audio');
+
+        var constraints = {
+            audio: true,
+            video: false
+        };
+
+        var gotStream = function (stream) {
+            var audioTracks = stream.getAudioTracks();
+            console.log('Got stream with constraints:', constraints);
+            console.log('Using audio device: ' + audioTracks[0].label);
+            stream.oninactive = function() {
+                console.log('Stream ended');
+            };
+            window.stream = stream; // make variable available to browser console
+            audio.srcObject = stream;
+        };
+
+        var onStreamError = function (err) {
+            console.log("The following error occurred: " + err.name);
+        };
+
+        if (navigator.getUserMedia) {
+            navigator.getUserMedia(constraints, gotStream, onStreamError)
+        }
+    </script>
+</body>
+</html>
